@@ -11,33 +11,27 @@ namespace prs_server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RequestsController : ControllerBase
-    {
+    public class RequestsController : ControllerBase {
         private readonly AppDbContext _context;
 
-        public RequestsController(AppDbContext context)
-        {
+        public RequestsController(AppDbContext context) {
             _context = context;
         }
 
         // GET: api/Requests
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Request>>> GetRequest()
-        {
+        public async Task<ActionResult<IEnumerable<Request>>> GetRequest() {
             return await _context.Request.Include(r => r.User).ToListAsync();
         }
 
         // GET: api/Requests/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Request>> GetRequest(int id)
-        {
+        public async Task<ActionResult<Request>> GetRequest(int id) {
             var request = await _context.Request.Include(x => x.User)
                                         .Include(x => x.Requestlines)
                                         .ThenInclude(xl => xl.Product)
                                         .SingleOrDefaultAsync(x => x.Id == id);
-
-            if (request == null)
-            {
+            if (request == null) {
                 return NotFound();
             }
 
@@ -47,27 +41,19 @@ namespace prs_server.Controllers
         // PUT: api/Requests/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRequest(int id, Request request)
-        {
-            if (id != request.Id)
-            {
+        public async Task<IActionResult> PutRequest(int id, Request request) {
+            if (id != request.Id) {
                 return BadRequest();
             }
 
             _context.Entry(request).State = EntityState.Modified;
 
-            try
-            {
+            try {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RequestExists(id))
-                {
+            } catch (DbUpdateConcurrencyException) {
+                if (!RequestExists(id)) {
                     return NotFound();
-                }
-                else
-                {
+                } else {
                     throw;
                 }
             }
@@ -75,7 +61,7 @@ namespace prs_server.Controllers
             return NoContent();
         }
         //this will set the request to review
-        [HttpPut("review")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> SetRequestToReview(Request request) { 
             if (request == null) {
                 return BadRequest();
@@ -89,7 +75,7 @@ namespace prs_server.Controllers
         }
 
         //this will set the request to approve
-        [HttpPut("approve")]
+        [HttpPut("{id}/approve")]
         public async Task<IActionResult> SetRequestToApprove(Request request) {
             if (request == null) {
                 return BadRequest();
@@ -99,7 +85,7 @@ namespace prs_server.Controllers
         }
 
         //this will set the request to rejected
-        [HttpPut("reject")]
+        [HttpPut("{id}/reject")]
         public async Task<IActionResult> SetRequestToRejected(Request request) {
             if (request == null) {
                 return BadRequest();

@@ -44,7 +44,9 @@ namespace prs_server.Controllers
             }
 
             return requestline;
-        } //this methid will recalculate the total when an insert update or delete is done
+        }
+        //this methid will recalculate the total when an insert update or delete is done
+        [HttpPut("recalc/{requestid}")]
         private async Task<IActionResult> RecalculateRequest(int requestId) 
         {
             var request = await _context.Request.FindAsync(requestId);
