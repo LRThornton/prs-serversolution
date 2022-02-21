@@ -82,6 +82,7 @@ namespace prs_server.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                await RecalculateRequest(requestline.RequestId);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -105,6 +106,7 @@ namespace prs_server.Controllers
         {
             _context.Requestline.Add(requestline);
             await _context.SaveChangesAsync();
+            await RecalculateRequest(requestline.RequestId);
 
             return CreatedAtAction("GetRequestline", new { id = requestline.Id }, requestline);
         }

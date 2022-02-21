@@ -61,8 +61,8 @@ namespace prs_server.Controllers
             return NoContent();
         }
         //this will set the request to review
-        [HttpPut("{id}")]
-        public async Task<IActionResult> SetRequestToReview(Request request) { 
+        [HttpPut("review/{id}")]
+        public async Task<IActionResult> SetRequestToReview(int id, Request request) { 
             if (request == null) {
                 return BadRequest();
             }
@@ -71,27 +71,27 @@ namespace prs_server.Controllers
             } else {
                 request.Status = "REVIEW";
             }
-            return await PutRequest(request.Id, request);
+            return await PutRequest(id, request);
         }
 
         //this will set the request to approve
-        [HttpPut("{id}/approve")]
-        public async Task<IActionResult> SetRequestToApprove(Request request) {
+        [HttpPut("approve/{id}")]
+        public async Task<IActionResult> SetRequestToApprove(int id, Request request) {
             if (request == null) {
                 return BadRequest();
             }
             request.Status = "APPROVED";
-            return await PutRequest(request.Id, request);
+            return await PutRequest(id, request);
         }
 
         //this will set the request to rejected
-        [HttpPut("{id}/reject")]
-        public async Task<IActionResult> SetRequestToRejected(Request request) {
+        [HttpPut("reject/{id}")]
+        public async Task<IActionResult> SetRequestToRejected(int id, Request request) {
             if (request == null) {
                 return BadRequest();
             }
             request.Status = "REJECTED";
-            return await PutRequest(request.Id, request);
+            return await PutRequest(id, request);
         }
 
         // POST: api/Requests
