@@ -18,15 +18,25 @@ namespace prs_server.Controllers
         public UsersController(AppDbContext context)
         {
             _context = context;
-        }//added the next method
-        public User Login(string username, string password) {
-            return _context.Users
-                    .SingleOrDefault(x => x.Username == username
-                                            && x.Password == password);
+           
+        
+        }//added the next method to require user and password
+
+        [HttpGet("{username}/{password}")]
+        public async Task<ActionResult<User>> GetUser(string username, string password) 
+        {
+            var user = await _context.User
+                            .SingleOrDefaultAsync(u => u.Username.Equals(username)
+                            && u.Password.Equals(password));
+
+            if (user == null) {
+                return NotFound();
+            }
+
+            return user;
+
         }
-
-
-
+     
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()

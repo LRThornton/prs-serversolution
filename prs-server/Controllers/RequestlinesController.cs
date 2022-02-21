@@ -20,21 +20,23 @@ namespace prs_server.Controllers
             _context = context;
         }
 
-
-
-
+        
         // GET: api/Requestlines
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Requestline>>> GetRequestline()
         {
-            return await _context.Requestline.ToListAsync();
+            return await _context.Requestline.Include(x => x.Product)
+                                              .Include(x => x.Request)
+                                              .ToListAsync();
         }
 
         // GET: api/Requestlines/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Requestline>> GetRequestline(int id)
         {
-            var requestline = await _context.Requestline.FindAsync(id);
+            var requestline = await _context.Requestline
+                .Include(x => x.Product)
+                .SingleOrDefaultAsync(x => x.Id ==id);
 
             if (requestline == null)
             {
@@ -43,6 +45,25 @@ namespace prs_server.Controllers
 
             return requestline;
         }
+        private async Task<IActionResult> RecalculateRequest(int requestId) 
+        {
+            var request = await _context.Request.FindAsync(requestId);
+            if (request == null) 
+            {
+                return BadRequest();
+            }
+            request.Total = (from rl in _context.Requestlines
+                             join p in _context.Products
+                             on rl.ProductId equals p.Id
+                             where rl.RequestId == requestId
+                             select new {
+                                 LineTotal = rl.Quantity * p.Price
+                             })
+                             .Sum(x => x.LineTotal);
+                    await _context.SaveChangesAsync();
+            return Ok();
+        }
+
 
         // PUT: api/Requestlines/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -98,6 +119,7 @@ namespace prs_server.Controllers
 
             _context.Requestline.Remove(requestline);
             await _context.SaveChangesAsync();
+            await RecalculateRequest(requestline.RequestId);
 
             return NoContent();
         }

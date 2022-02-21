@@ -24,14 +24,17 @@ namespace prs_server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Request>>> GetRequest()
         {
-            return await _context.Request.ToListAsync();
+            return await _context.Request.Include(r => r.User).ToListAsync();
         }
 
         // GET: api/Requests/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Request>> GetRequest(int id)
         {
-            var request = await _context.Request.FindAsync(id);
+            var request = await _context.Request.Include(x => x.User)
+                                        .Include(x => x.Requestlines)
+                                        .ThenInclude(xl => xl.Product)
+                                        .SingleOrDefaultAsync(x => x.Id == id);
 
             if (request == null)
             {
@@ -71,9 +74,41 @@ namespace prs_server.Controllers
 
             return NoContent();
         }
+        //this will set the request to review
+        [HttpPut("review")]
+        public async Task<IActionResult> SetRequestToReview(Request request) { 
+            if (request == null) {
+                return BadRequest();
+            }
+            if (request.Total <= 50) {
+                request.Status = "APPROVED";
+            } else {
+                request.Status = "REVIEW";
+            }
+            return await PutRequest(request.Id, request);
+        }
+
+        //this will set the request to approve
+        [HttpPut("approve")]
+        public async Task<IActionResult> SetRequestToApprove(Request request) {
+            if (request == null) {
+                return BadRequest();
+            }
+            request.Status = "APPROVED";
+            return await PutRequest(request.Id, request);
+        }
+
+        //this will set the request to rejected
+        [HttpPut("reject")]
+        public async Task<IActionResult> SetRequestToRejected(Request request) {
+            if (request == null) {
+                return BadRequest();
+            }
+            request.Status = "REJECTED";
+            return await PutRequest(request.Id, request);
+        }
 
         // POST: api/Requests
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Request>> PostRequest(Request request)
         {
