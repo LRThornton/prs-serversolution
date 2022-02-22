@@ -18,6 +18,16 @@ namespace prs_server.Controllers
             _context = context;
         }
 
+        [HttpGet("Review/{id}")]
+        public async Task<ActionResult<IEnumerable<Request>>> GetRequestsInReview(int userId, Request request)
+        {
+            var requests = await _context.Requests
+                                    .Where(x => x.Status == "REVIEW" //this will narrow the request to only ones in review and not the current users requests
+                                     && x.UserId != userId) //this will make it so the reviewers items Do not show up because they may not approve their own requests
+                                    .ToListAsync();
+            return requests;
+        }
+
         // GET: api/Requests
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Request>>> GetRequest() {

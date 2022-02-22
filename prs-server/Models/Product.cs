@@ -25,10 +25,7 @@ namespace prs_server.Models {
         public int VendorId { get; set; }
         //virtual instance required for EF to recognize Fk, virtual means it wont be in the database, just in the class
         public virtual Vendor Vendor { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<Requestline> Requestlines { get; set; }
-
-
+        
         public Product() { }
 
     }

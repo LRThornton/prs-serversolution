@@ -24,8 +24,7 @@ namespace prs_server.Models {
         public string Email { get; set; }
         public bool IsReviewer { get; set; }
         public bool IsAdmin { get; set; }
-        [JsonIgnore]
-        public virtual IEnumerable<Request> Requests { get; set; }
+       
 
         public User() { }
     }
