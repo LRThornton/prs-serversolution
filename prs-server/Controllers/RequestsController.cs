@@ -18,8 +18,8 @@ namespace prs_server.Controllers
             _context = context;
         }
 
-        [HttpGet("Review/{id}")]
-        public async Task<ActionResult<IEnumerable<Request>>> GetRequestsInReview(int userId, Request request)
+        [HttpGet("Review/{userId}")]
+        public async Task<ActionResult<IEnumerable<Request>>> GetRequestsInReview(int userId)
         {
             var requests = await _context.Requests
                                     .Where(x => x.Status == "REVIEW" //this will narrow the request to only ones in review and not the current users requests
