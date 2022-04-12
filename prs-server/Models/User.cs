@@ -15,7 +15,7 @@ namespace prs_server.Models {
         [Required, StringLength(30)]
         public string Password { get; set; }
         [Required, StringLength(30)]
-        public string Firtsname { get; set; }
+        public string Firstname { get; set; }
         [Required, StringLength(30)]
         public string Lastname { get; set; }
         [StringLength(12)]
