@@ -73,7 +73,7 @@ namespace prs_server.Controllers
         }
                 // POST: api/Products
      
-        [HttpPost("{product}")]
+        [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
             _context.Product.Add(product);
